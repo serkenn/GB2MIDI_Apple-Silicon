@@ -1,0 +1,30 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-macos:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build app bundle
+        run: |
+          chmod +x build/build_app.sh
+          ./build/build_app.sh
+
+      - name: Zip app
+        run: |
+          cd dist
+          zip -r GB2MIDI.app.zip GB2MIDI.app
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/GB2MIDI.app.zip
